@@ -7,7 +7,7 @@
         if (index === -1) index = source.indexOf(keyword.toUpperCase());
         if (index === -1) return '';
 
-        let result = source.slice(index + keyword.length, source.length - 1);
+        let result = source.slice(index + keyword.length, source.length);
         result = result.replaceAll(' ', '');
 
         const firstNumber = result.match(/\d+/);
@@ -40,7 +40,7 @@
         const chaKeywords = ['cha', 'charisma'];
         const dmgKeywords = ['hit', 'damage', 'dmg'];
         const hitpoints = ['hitpoints', 'hit points', 'hp'];
-        const armorKeywords = ['AC', 'Armor Class'];
+        const armorKeywords = ['AC', 'Armor Class', "ArmorClass", "Armor"];
 
         function convertModifier(mod) {
             let fmod = Math.ceil((Number(mod) - 10) / 2);

@@ -11,7 +11,7 @@ namespace CreatureSimulator
 
         public static void LogGroupPosition(int group, List<string> logging, params List<Creature>[] teams)
         {
-            var creaturesInGroup = teams.ToList().SelectMany(y => y.Where(a => a.currentGroup == group).Select(z => z.name)).ToList();
+            var creaturesInGroup = teams.ToList().SelectMany(y => y.Where(a => a.CurrentGroup == group).Select(z => z.Name)).ToList();
             if (creaturesInGroup.Count > 0) logging.Add($"Group {group}: " + String.Join(',', creaturesInGroup));
             else logging.Add($"Group {group}: none");
         }
@@ -100,10 +100,10 @@ namespace CreatureSimulator
         {
             foreach (var team in teams)
             {
-                var removeCreatures = team.Where(creature => creature.hitpoints <= 0).ToList();
+                var removeCreatures = team.Where(creature => creature.Hitpoints <= 0).ToList();
                 removeCreatures.ForEach(creature => {
                     team.Remove(creature);
-                    logging.Add($"{creature.name} died");
+                    logging.Add($"{creature.Name} died");
                 });
             }
         }
@@ -111,9 +111,9 @@ namespace CreatureSimulator
         public static string ProcessTurn(Creature creature, List<Creature> opposingTeam, int numberOfGroups)
         {
             if (opposingTeam.Count == 0) return "Battle has ended";
-            var atSpace = opposingTeam.Where(x => x.currentGroup == creature.currentGroup).ToList();
-            var otherSpaces = opposingTeam.Where(x => x.currentGroup != creature.currentGroup).ToList();
-            var noSpaces = Enumerable.Range(1, numberOfGroups).Where(x => otherSpaces.Where(y => y.currentGroup == x).Count() == 0).ToList();
+            var atSpace = opposingTeam.Where(x => x.CurrentGroup == creature.CurrentGroup).ToList();
+            var otherSpaces = opposingTeam.Where(x => x.CurrentGroup != creature.CurrentGroup).ToList();
+            var noSpaces = Enumerable.Range(1, numberOfGroups).Where(x => otherSpaces.Where(y => y.CurrentGroup == x).Count() == 0).ToList();
 
             var atChoice = Dice.Choose(atSpace);
             var otherChoice = Dice.Choose(otherSpaces);
@@ -130,7 +130,7 @@ namespace CreatureSimulator
                 var attack = creature.GetAttackByType(Dice.enWeaponTypes.OH, false);
                 if (attack != null && otherSpaces.Count > 0)
                 {
-                    creature.currentGroup = otherChoice.currentGroup;
+                    creature.CurrentGroup = otherChoice.CurrentGroup;
                     return attack.MakeAttack(creature, otherChoice);
                 }
             }
@@ -144,7 +144,7 @@ namespace CreatureSimulator
                 {
                     var combinedList = new List<Creature> { atChoice, otherChoice };
                     combinedList = combinedList.RemoveNulls().ToList();
-                    creature.currentGroup = Dice.Choose(noSpaces);
+                    creature.CurrentGroup = Dice.Choose(noSpaces);
                     return attack.MakeAttack(creature, Dice.Choose(combinedList));
                 }
                 else if (attack != null && otherSpaces.Count > 0) // cant move
@@ -164,7 +164,7 @@ namespace CreatureSimulator
                 var attack = creature.GetAttackByType(Dice.enWeaponTypes.NW, false);
                 if (attack != null && otherSpaces.Count > 0 && atSpace.Count == 0)
                 {
-                    creature.currentGroup = otherChoice.currentGroup;
+                    creature.CurrentGroup = otherChoice.CurrentGroup;
                     return attack.MakeAttack(creature, otherChoice);
                 }
             }

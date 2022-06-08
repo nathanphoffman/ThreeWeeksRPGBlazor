@@ -3,28 +3,100 @@
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<h1>Creature Combat</h1>
 
-<p role="status">Current count: @currentCount</p>
+Paste in 5e creature stats using various notation, ex: "Intelligence: 14, STR: 10, AC 14"
+<br/>
+<textarea id="texta" @bind="creature5e"></textarea>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
+<h4>Converted result, stats not found will be set to default values</h4>
 <p>
     @text
 </p>
 
-@code {
-    private int currentCount = 0;
-    private MarkupString text;
+<h3>Optionally Add to Simulator:</h3>
+<div>
+<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="AddTeam1">Add To Team1</button>
+<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="AddTeam2">Add To Team2</button>
+</div>
+<div style="float:left;width:40%">
+<h3>
+    Team 1
+</h3>
 
-    private async Task IncrementCount()
+<p>
+    @foreach (var item in team1Text)
     {
-        currentCount++;
-        await ConvertCreature("AC:14");
+        <br/>
+        @item
     }
 
-    private async Task ConvertCreature(string creature5e)
+</p>
+</div>
+
+<div style="float:left;width: 40%">
+<h3>
+    Team 2
+</h3>
+
+
+<p>
+    @foreach (var item in team2Text)
     {
-        text = new(await JS.InvokeAsync<string>("convertCreature", creature5e));
+        <br/>
+        @item
+    }
+
+</p>
+</div>
+
+<div>
+<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="SimulateCombat">Simulate One Combat</button>
+<!--<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="AddTeam2">Estimate Win / Loss Ratio</button>-->
+</div>
+
+
+@code {
+    private int currentCount = 0;
+    private string text = "";
+
+    private List<string> team1Text = new List<string>();
+    private List<string> team2Text = new List<string>();
+
+    private bool HideLabel = false;
+    private string _creature5e = "";
+    private string creature5e { 
+        get { return _creature5e; } 
+        set {
+            _creature5e = value;
+            ConvertCreature(value).GetAwaiter().GetResult(); 
+        }
+    }
+
+    private void AddTeam1()
+    {
+        team1Text.Add(text);
+        text = "";
+        _creature5e = "";
+    }
+
+    private void AddTeam2()
+    {
+        team2Text.Add(text);
+        text = "";
+        _creature5e = "";
+    }
+
+    private async Task ConvertCreature(string val)
+    {
+        HideLabel = true;
+        text = new(await JS.InvokeAsync<string>("convertCreature", val));
+
+        StateHasChanged();
+    }
+
+    private void SimulateCombat()
+    {
+        
     }
 }
