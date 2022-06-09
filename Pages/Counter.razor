@@ -1,17 +1,19 @@
 ﻿@page "/counter"
+@using CreatureSimulator
 @inject IJSRuntime JS
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Creature Combat</h1>
 
-Paste in 5e creature stats using various notation, ex: "Intelligence: 14, STR: 10, AC 14"
+Paste in 5e creature stats using various notation, ex: "Intelligence: 14, STR: 10, AC 14" Converted result, stats not found will be set to default values
 <br/>
 <textarea id="texta" @bind="creature5e"></textarea>
 
-<h4>Converted result, stats not found will be set to default values</h4>
 <p>
-    @text
+    @if(selectedCreature != null){
+        @selectedCreature.creatureStats
+    }
 </p>
 
 <h3>Optionally Add to Simulator:</h3>
@@ -25,10 +27,10 @@ Paste in 5e creature stats using various notation, ex: "Intelligence: 14, STR: 1
 </h3>
 
 <p>
-    @foreach (var item in team1Text)
+    @foreach (var item in team1)
     {
         <br/>
-        @item
+        @item.creatureStats
     }
 
 </p>
@@ -41,10 +43,10 @@ Paste in 5e creature stats using various notation, ex: "Intelligence: 14, STR: 1
 
 
 <p>
-    @foreach (var item in team2Text)
+    @foreach (var item in team2)
     {
         <br/>
-        @item
+        @item.creatureStats
     }
 
 </p>
@@ -58,10 +60,10 @@ Paste in 5e creature stats using various notation, ex: "Intelligence: 14, STR: 1
 
 @code {
     private int currentCount = 0;
-    private string text = "";
+    private CreatureStats selectedCreature = null;
 
-    private List<string> team1Text = new List<string>();
-    private List<string> team2Text = new List<string>();
+    private List<CreatureStats> team1 = new List<CreatureStats>();
+    private List<CreatureStats> team2 = new List<CreatureStats>();
 
     private bool HideLabel = false;
     private string _creature5e = "";
@@ -69,34 +71,49 @@ Paste in 5e creature stats using various notation, ex: "Intelligence: 14, STR: 1
         get { return _creature5e; } 
         set {
             _creature5e = value;
-            ConvertCreature(value).GetAwaiter().GetResult(); 
+            ConvertCreature(value); 
         }
     }
 
     private void AddTeam1()
     {
-        team1Text.Add(text);
-        text = "";
+        if (selectedCreature == null) return;
+        team1.Add(selectedCreature);
+        selectedCreature = null;
         _creature5e = "";
     }
 
     private void AddTeam2()
     {
-        team2Text.Add(text);
-        text = "";
+        if (selectedCreature == null) return;
+        team2.Add(selectedCreature);
+        selectedCreature = null;
         _creature5e = "";
     }
 
     private async Task ConvertCreature(string val)
     {
         HideLabel = true;
-        text = new(await JS.InvokeAsync<string>("convertCreature", val));
-
+        CreatureStats creature = await JS.InvokeAsync<CreatureStats>("convertCreature", val, true);
+        selectedCreature = creature;
         StateHasChanged();
+    }
+
+    public class CreatureStats {
+        public string creatureStats { get; set; }
+        public int strength { get; set; }
+        public int intelligence { get; set; }
+        public int dexterity { get; set; }
+        public int charisma { get; set; }
+        public int hearts { get; set; }
+        public int armor { get; set; }
+        public string type { get; set; }
+        public int damage { get; set; }
     }
 
     private void SimulateCombat()
     {
-        
+        var team1Creatures = team1.Select(x => new Creature(x));
+        var team2Creatures = team2.Select(x => new Creature(x));
     }
 }

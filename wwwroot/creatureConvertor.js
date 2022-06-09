@@ -33,7 +33,7 @@
 
     }
 
-    function convert(val) {
+    function convert(val,is5e) {
         const strKeywords = ['str', 'strength'];
         const dexKeywords = ['dex', 'dexterity'];
         const intKeywords = ['int', 'intelligence'];
@@ -41,6 +41,9 @@
         const dmgKeywords = ['hit', 'damage', 'dmg'];
         const hitpoints = ['hitpoints', 'hit points', 'hp'];
         const armorKeywords = ['AC', 'Armor Class', "ArmorClass", "Armor"];
+
+        const statKeywords = ['stat', 'stats', 'statistics', 'statistic'];
+        const heartKeywords = ['heart','hearts'];
 
         function convertModifier(mod) {
             let fmod = Math.ceil((Number(mod) - 10) / 2);
@@ -83,25 +86,45 @@
             return ac > 10 ? 10 : ac;
         }
 
+        if (is5e) {
 
+            let creature = {
+                strength: convertModifier() || 0,
+                intelligence: convertModifier(getValue(intKeywords, val)) || 0,
+                dexterity: convertModifier(getValue(dexKeywords, val)) || 0,
+                charisma: convertModifier(getValue(chaKeywords, val)) || 0
+            }
 
-        let creature = {
-            strength: convertModifier(getValue(strKeywords, val)) || 0,
-            intelligence: convertModifier(getValue(intKeywords, val)) || 0,
-            dexterity: convertModifier(getValue(dexKeywords, val)) || 0,
-            charisma: convertModifier(getValue(chaKeywords, val)) || 0
+            let avg = averageMod(creature) || 0;
+            let vari = getVariance(avg, creature) || '';
+            let damage = getValue(dmgKeywords, val) || 4;
+            let damageString = convertDamage(creature, damage);
+            let hp = getValue(hitpoints, val);
+            let newHP = convertHP(hp) || 1;
+            let fiveArmor = getValue(armorKeywords, val);
+            let newFiveArmor = convertArmorClass(fiveArmor) || 8;
+
+            return {
+                creatureStats: `STATS:+${avg} / ${vari} Hearts: ${newHP}.  Damage: ${damageString}.  Armor: ${newFiveArmor}`,
+                strength: creature.strength,
+                intelligence: creature.intelligence,
+                dexterity: creature.dexterity,
+                charisma: creature.charisma,
+                hearts: newHP,
+                armor: newFiveArmor,
+                type: damageString.slice(0, 2) || "NW",
+                damage: Number(damageString.slice(2, damageString.length) || 0)
+            };
+        }
+        else {
+            let stats = getValue(statKeywords, val);
+            let str = getValue(strKeywords, val) || stats || 0;
+            let dex = getValue(dexKeywords, val) || stats || 0;
+            let cha = getValue(chaKeywords, val) || stats || 0;
+            let int = getValue(intKeywords, val) || stats || 0;
+            let hearts = getValue(heartKeywords, val) || 1;
         }
 
-        let avg = averageMod(creature) || 0;
-        let vari = getVariance(avg, creature) || '';
-        let damage = getValue(dmgKeywords, val) || 4;
-        let damageString = convertDamage(creature, damage);
-        let hp = getValue(hitpoints, val);
-        let newHP = convertHP(hp) || 1;
-        let fiveArmor = getValue(armorKeywords, val);
-        let newFiveArmor = convertArmorClass(fiveArmor) || 8;
-
-        return `STATS:+${avg} / ${vari} Hearts: ${newHP}.  Damage: ${damageString}.  Armor: ${newFiveArmor}`;
     }
 
     window.convertCreature = convert;

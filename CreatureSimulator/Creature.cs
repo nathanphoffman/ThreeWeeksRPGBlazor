@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ThreeWeeksRPGBlazor.Pages.Counter;
 
 namespace CreatureSimulator
 {
@@ -19,6 +20,20 @@ namespace CreatureSimulator
             this.Attacks = new List<Attack>();
             this.Name = name;
             SetHitpoints();
+        }
+
+        public Creature(CreatureStats creature)
+        {
+            Enum.TryParse<Dice.enWeaponTypes>(creature.type, out Dice.enWeaponTypes weaponType);
+
+            this.Hearts = creature.hearts;
+            this.Dexterity = creature.dexterity;
+            this.Intelligence = creature.intelligence;
+            this.Charisma = creature.charisma;
+            this.Strength = creature.strength;
+            this.Armor = creature.armor;
+            this.Attacks.Add(new Attack { damage = creature.damage, weaponType = weaponType });
+               
         }
         /*
         public Creature(string stats)
@@ -38,7 +53,7 @@ namespace CreatureSimulator
         public int Charisma;
         public int Dexterity;
         public string Name;
-        public List<Attack> Attacks;
+        public List<Attack> Attacks = new List<Attack>();
 
         public Creature SetCurrentGroup(int numGroups)
         {
