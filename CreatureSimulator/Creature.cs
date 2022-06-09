@@ -21,7 +21,7 @@ namespace CreatureSimulator
             SetHitpoints();
         }
 
-        public Creature(CreatureStats creature)
+        public Creature(CreatureStats creature, int numOfGroups)
         {
             Enum.TryParse<Dice.enWeaponTypes>(creature.type, out Dice.enWeaponTypes weaponType);
 
@@ -31,9 +31,9 @@ namespace CreatureSimulator
             this.Charisma = creature.charisma;
             this.Strength = creature.strength;
             this.Armor = creature.armor;
-            this.Attacks.Add(new Attack { damage = creature.damage, weaponType = weaponType });
+            this.Attacks.Add(new Attack { damage = creature.damage, weaponType = weaponType, ranged = creature.ranged });
             this.Name = String.IsNullOrEmpty(creature.name) ? $"Creature #{Dice.Random(1000) + 1}" : creature.name;
-            SetHitpoints();
+            SetHitpoints().AddDefaultWeapon().SetCurrentGroup(numOfGroups);
         }
         /*
         public Creature(string stats)
@@ -86,9 +86,10 @@ namespace CreatureSimulator
             return this;
         }
 
-        private void SetHitpoints()
+        private Creature SetHitpoints()
         {
             Hitpoints = Dice.Roll2D6() * Hearts;
+            return this;
         }
 
         public void LogCreatureStats(List<string> log)

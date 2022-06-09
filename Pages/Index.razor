@@ -13,7 +13,8 @@ Paste in a list of TWRPG compatible creatures seperated by new lines.  If you in
 <button class="btn btn-primary" @onclick="AddTeam1">Add To Team1</button>
 <button class="btn btn-primary" @onclick="AddTeam2">Add To Team2</button>
 </div>
-<div>
+<br/>
+<div style="display:inline-block;width:100%">
     <div style="float:left;width:40%">
         <h3>
             Team 1
@@ -23,7 +24,7 @@ Paste in a list of TWRPG compatible creatures seperated by new lines.  If you in
                 @foreach (var item in team1)
                 {
                     <br/>
-                    @item.creatureStats
+                    @item.name<span>:</span> @item.creatureStats
                 }
     
         </p>
@@ -38,7 +39,7 @@ Paste in a list of TWRPG compatible creatures seperated by new lines.  If you in
             @foreach (var item in team2)
             {
                 <br/>
-                @item.creatureStats
+                @item.name<span>:</span> @item.creatureStats
             }
         </p>
     </div>
@@ -46,9 +47,10 @@ Paste in a list of TWRPG compatible creatures seperated by new lines.  If you in
 
 <div>
 <button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="SimulateCombat">Simulate One Combat</button>
-<!--<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="AddTeam2">Estimate Win / Loss Ratio</button>-->
+<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="EstimateRatio">Estimate Win / Loss Ratio</button>
 </div>
 
+<div>
     <p>
             @foreach (var item in logging)
             {
@@ -57,10 +59,12 @@ Paste in a list of TWRPG compatible creatures seperated by new lines.  If you in
             }
     
     </p>
-
+</div>
 @code {
     private int currentCount = 0;
     private CreatureStats selectedCreature = null;
+    private int numOfGroups = 3;
+    private int iterations = 5000;
 
     private List<CreatureStats> team1 = new List<CreatureStats>();
     private List<CreatureStats> team2 = new List<CreatureStats>();
@@ -77,30 +81,45 @@ Paste in a list of TWRPG compatible creatures seperated by new lines.  If you in
         {
             _creatureTWRPG = value;
             HideLabel = true;
-            //AddCreature();
-
         }
     }
 
-    private void AddTeam1()
+    private async Task AddTeam1()
     {
-        //CreatureStats creature = await JS.InvokeAsync<CreatureStats>("convertCreature", creature5e, true);
-        //team1.Add();
-        _creatureTWRPG = "";
+        await AddToTeam(team1);
     }
 
-    private void AddTeam2()
+    private async Task AddTeam2()
     {
-        //team2.Add();
-        _creatureTWRPG = "";
+        await AddToTeam(team2);
     }
 
+    private async Task AddToTeam(List<CreatureStats> team)
+    {
+        var creatureSplit = creatureTWRPG.Split('\n');
+        foreach(var creatureText in creatureSplit)
+        {
+            CreatureStats creature = await JS.InvokeAsync<CreatureStats>("convertCreature", creatureTWRPG, false);
+            creature.name = $"Creature#{Dice.Random(1000) + 1}";
+            team.Add(creature);
+        }
+
+        _creatureTWRPG = "";
+    }
 
     private void SimulateCombat()
     {
-        var team1Creatures = team1.Select(x => new Creature(x)).ToList();
-        var team2Creatures = team2.Select(x => new Creature(x)).ToList();
-        (int result, var logs) = Simulator.Run(3, team1Creatures, team2Creatures);
+        var team1Creatures = team1.Select(x => new Creature(x,numOfGroups)).ToList();
+        var team2Creatures = team2.Select(x => new Creature(x,numOfGroups)).ToList();
+        (int result, var logs) = Simulator.Run(numOfGroups, team1Creatures, team2Creatures);
         this.logging = logs;
     }
+
+    private void EstimateRatio()
+    {
+        var team1Creatures = team1.Select(x => new Creature(x,numOfGroups)).ToList();
+        var team2Creatures = team2.Select(x => new Creature(x,numOfGroups)).ToList();
+        this.logging  = Simulator.RunStatistics(iterations, numOfGroups, team1Creatures, team2Creatures);
+    }
+
 }

@@ -11,6 +11,8 @@
         public int armor { get; set; }
         public string type { get; set; }
         public int damage { get; set; }
+
+        public bool ranged { get; set; }
         public string name { get; set; }
     }
 }

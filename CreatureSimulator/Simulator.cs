@@ -23,8 +23,9 @@ namespace CreatureSimulator
             logging.Add("--------------------------");
         }
 
-        public static void RunStatistics(int iterations, int roomSize, List<Creature> team1, List<Creature> team2)
+        public static List<string> RunStatistics(int iterations, int roomSize, List<Creature> team1, List<Creature> team2)
         {
+            List<string> logging = new List<string>();
             int[] results = new int[3];
 
             int consensuses = 0;
@@ -34,24 +35,26 @@ namespace CreatureSimulator
             {
                 (int result, List<string> logs) = Run(roomSize == 0 ? Dice.Choose(new List<int> {1,2,3,4 }) : roomSize, team1, team2);
                 results[result] += 1;
-                if (i % 10000 == 0)
+                if (i % 1000 == 0)
                 {
                     decimal thisNumber = (decimal)results[1] / ((decimal)results[2] + (decimal)results[1] + (decimal)0.00001);
 
-                    if (Math.Abs(thisNumber - lastNumber) < (decimal)0.0004 || lastNumber == 0) consensuses++;
+                    if (Math.Abs(thisNumber - lastNumber) < (decimal)0.004 || lastNumber == 0) consensuses++;
                     else consensuses = 0;
 
                     lastNumber = (decimal)results[1] / ((decimal)results[2] + (decimal)results[1] + (decimal)0.00001);
-                    
-                    Console.WriteLine($"Team1 wins: {results[1]} vs Team2 wins: {results[2]}  {thisNumber}");
+
+                    logging.Add($"Team1 wins: {results[1]} vs Team2 wins: {results[2]}  {thisNumber}");
 
                     if (consensuses > 10)
                     {
-                        Console.WriteLine($"CONSENSUS FOUND! Team1 wins {Math.Round(thisNumber*100,1)}% of the time.");
+                        logging.Add($"CONSENSUS FOUND! Team1 wins {Math.Round(thisNumber*100,1)}% of the time. {results[1]} vs {results[2]}");
                         break;
                     }
                 }
             }
+
+            return logging;
 
             
         }

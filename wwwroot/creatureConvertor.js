@@ -50,6 +50,7 @@
         const thKeywords = ['th'];
         const ohKeywords = ['oh'];
         const nwKeywords = ['nw'];
+        const rangedKeywords = ['nwr','ohr','thr'];
 
         function convertModifier(mod) {
             let fmod = Math.ceil((Number(mod) - 10) / 2);
@@ -123,22 +124,24 @@
             };
         }
         else {
-            let stats = getValue(statKeywords, val);
+            let stats = Number(getValue(statKeywords, val) || 0);
             let th = getValue(thKeywords, val);
             let oh = getValue(ohKeywords, val);
             let nw = getValue(nwKeywords, val);
             let type = th !== undefined ? "TH" : oh !== undefined ? "OH" : "NW";
             let damage = type === "TH" ? th : type === "OH" ? oh : nw || 0;
+            let ranged = getValue(rangedKeywords, val) === undefined ? false : true;
 
             let result = {
-                strength: getValue(strKeywords, val) || stats || 0,
-                dexterity: getValue(dexKeywords, val) || stats || 0,
-                charisma: getValue(chaKeywords, val) || stats || 0,
-                intelligence: getValue(intKeywords, val) || stats || 0,
-                hearts: getValue(heartKeywords, val) || 1,
-                armor: getValue(armorKeywords, val) || 8,
+                strength: Number(getValue(strKeywords, val)) || stats || 0,
+                dexterity: Number(getValue(dexKeywords, val)) || stats || 0,
+                charisma: Number(getValue(chaKeywords, val)) || stats || 0,
+                intelligence: Number(getValue(intKeywords, val)) || stats || 0,
+                hearts: Number(getValue(heartKeywords, val)) || 1,
+                armor: Number(getValue(armorKeywords, val)) || 8,
                 type,
-                damage
+                ranged,
+                damage : Number(damage)
             }
 
             let vari = getVariance(stats, {
@@ -147,7 +150,7 @@
                 dexterity: result.dexterity,
                 charisma: result.charisma
             }) || '';
-            result.creatureStats = `STATS:+${stats} / ${vari} Hearts: ${result.hearts}. ${result.type}${result.damage}. Armor: ${result.armor}.`;
+            result.creatureStats = `STATS:+${stats} / ${vari} Hearts: ${result.hearts}. ${result.type}${result.ranged ? 'R' : ''}${result.damage}. Armor: ${result.armor}.`;
 
             return result;
 
