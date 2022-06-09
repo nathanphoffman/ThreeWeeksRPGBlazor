@@ -196,13 +196,13 @@
       "mscorlib.dll": "sha256-Q4A\/043fz702a7DDbm+JAtMHV3jKAZ9k8khztTMKp2M=",
       "netstandard.dll": "sha256-W9cwgVmBZsddVw3WVFMC5Gya92UufvbVTNR4+u7pnR0=",
       "System.Private.CoreLib.dll": "sha256-KVnZkFos\/ML\/3S2isVijfmFZXO4zEQeCga6BZvGdTbY=",
-      "ThreeWeeksRPGBlazor.dll": "sha256-iyWLorA2wI3T6+LppHtkAV22CP5\/ZjcF1t3\/+rhBCGk="
+      "ThreeWeeksRPGBlazor.dll": "sha256-B6Y0DACz0dP2+CXuMLc+1YA51N57ofO2SABnHSA+VDs="
     },
     "extensions": null,
     "lazyAssembly": null,
     "libraryInitializers": null,
     "pdb": {
-      "ThreeWeeksRPGBlazor.pdb": "sha256-+5YWzA16FBzdT+5PRmlGOVE6F8XYjfiMLSiWH7fXs8g="
+      "ThreeWeeksRPGBlazor.pdb": "sha256-Q+PQLP1\/nE2RVn5epyUIbUy6eDXo4pNR0JI2VzhIMtk="
     },
     "runtime": {
       "dotnet.6.0.4.5157e0b7qq.js": "sha256-WYno\/cK5MDsl5yi4T\/\/QgUskbBfhLL77i+c0uKzO9+c=",

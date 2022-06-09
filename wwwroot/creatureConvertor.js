@@ -20,7 +20,9 @@
     }
 
     function newKeywords(sourceKeywords, char) {
-        return sourceKeywords.map(x => x + char);
+        let prefixed = sourceKeywords.map(x => char + x);
+        let postfixed = sourceKeywords.map(x => x + char);
+        return [...prefixed, ...postfixed];
     }
 
 
@@ -33,7 +35,7 @@
 
     }
 
-    function convert(val,is5e) {
+    function convert(val, is5e) {
         const strKeywords = ['str', 'strength'];
         const dexKeywords = ['dex', 'dexterity'];
         const intKeywords = ['int', 'intelligence'];
@@ -43,7 +45,11 @@
         const armorKeywords = ['AC', 'Armor Class', "ArmorClass", "Armor"];
 
         const statKeywords = ['stat', 'stats', 'statistics', 'statistic'];
-        const heartKeywords = ['heart','hearts'];
+        const heartKeywords = ['heart', 'hearts'];
+
+        const thKeywords = ['th'];
+        const ohKeywords = ['oh'];
+        const nwKeywords = ['nw'];
 
         function convertModifier(mod) {
             let fmod = Math.ceil((Number(mod) - 10) / 2);
@@ -72,7 +78,7 @@
 
             const damageConverted = Math.ceil(prevDamage / 2);
             if (creature.dexterity > creature.strength) return `OH${damageConverted - 5}`;
-            else return damageConverted > 5 ? `TH+${damageConverted - 5}` : `NH${damageConverted - 3}`;
+            else return damageConverted > 5 ? `TH+${damageConverted - 5}` : `NW${damageConverted - 3}`;
 
         }
 
@@ -105,7 +111,7 @@
             let newFiveArmor = convertArmorClass(fiveArmor) || 8;
 
             return {
-                creatureStats: `STATS:+${avg} / ${vari} Hearts: ${newHP}.  Damage: ${damageString}.  Armor: ${newFiveArmor}`,
+                creatureStats: `STATS:+${avg} / ${vari} Hearts: ${newHP}. Damage: ${damageString}. Armor: ${newFiveArmor}.`,
                 strength: creature.strength,
                 intelligence: creature.intelligence,
                 dexterity: creature.dexterity,
@@ -118,13 +124,34 @@
         }
         else {
             let stats = getValue(statKeywords, val);
-            let str = getValue(strKeywords, val) || stats || 0;
-            let dex = getValue(dexKeywords, val) || stats || 0;
-            let cha = getValue(chaKeywords, val) || stats || 0;
-            let int = getValue(intKeywords, val) || stats || 0;
-            let hearts = getValue(heartKeywords, val) || 1;
-        }
+            let th = getValue(thKeywords, val);
+            let oh = getValue(ohKeywords, val);
+            let nw = getValue(nwKeywords, val);
+            let type = th !== undefined ? "TH" : oh !== undefined ? "OH" : "NW";
+            let damage = type === "TH" ? th : type === "OH" ? oh : nw || 0;
 
+            let result = {
+                strength: getValue(strKeywords, val) || stats || 0,
+                dexterity: getValue(dexKeywords, val) || stats || 0,
+                charisma: getValue(chaKeywords, val) || stats || 0,
+                intelligence: getValue(intKeywords, val) || stats || 0,
+                hearts: getValue(heartKeywords, val) || 1,
+                armor: getValue(armorKeywords, val) || 8,
+                type,
+                damage
+            }
+
+            let vari = getVariance(stats, {
+                strength: result.strength,
+                intelligence: result.intelligence,
+                dexterity: result.dexterity,
+                charisma: result.charisma
+            }) || '';
+            result.creatureStats = `STATS:+${stats} / ${vari} Hearts: ${result.hearts}. ${result.type}${result.damage}. Armor: ${result.armor}.`;
+
+            return result;
+
+        }
     }
 
     window.convertCreature = convert;

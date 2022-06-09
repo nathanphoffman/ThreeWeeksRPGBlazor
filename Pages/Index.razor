@@ -84,19 +84,14 @@ Paste in a list of TWRPG compatible creatures seperated by new lines.  If you in
 
     private void AddTeam1()
     {
-        if (selectedCreature == null) return;
-        //selectedCreature.name = creatureName;
-        team1.Add(selectedCreature);
-        selectedCreature = null;
+        //CreatureStats creature = await JS.InvokeAsync<CreatureStats>("convertCreature", creature5e, true);
+        //team1.Add();
         _creatureTWRPG = "";
     }
 
     private void AddTeam2()
     {
-        if (selectedCreature == null) return;
-        //selectedCreature.name = creatureName;
-        team2.Add(selectedCreature);
-        selectedCreature = null;
+        //team2.Add();
         _creatureTWRPG = "";
     }
 
