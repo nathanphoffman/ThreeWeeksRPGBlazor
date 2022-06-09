@@ -23,7 +23,7 @@ namespace CreatureSimulator
             logging.Add("--------------------------");
         }
 
-        public static void RunStatistics(int iterations)
+        public static void RunStatistics(int iterations, int roomSize, List<Creature> team1, List<Creature> team2)
         {
             int[] results = new int[3];
 
@@ -32,7 +32,7 @@ namespace CreatureSimulator
             int i = 0;
             while (i++ < iterations)
             {
-                (int result, List<string> logs) = Run(3);
+                (int result, List<string> logs) = Run(roomSize == 0 ? Dice.Choose(new List<int> {1,2,3,4 }) : roomSize, team1, team2);
                 results[result] += 1;
                 if (i % 10000 == 0)
                 {
@@ -56,12 +56,12 @@ namespace CreatureSimulator
             
         }
 
-        public static (int result,List<string> logs) Run(int numberOfGroups = 3)
+        public static (int result,List<string> logs) Run(int numberOfGroups, List<Creature> team1, List<Creature> team2)
         {
             List<string> logging = new List<string>();
 
             // !! we need to work here next and move teams to a parameter and combine
-
+            /*
             var creature1Ranged = new Creature("GoblinRanged", 6, 6, 1, 1, 1, 2).AddOHAttack(0, 1, false).SetCurrentGroup(numberOfGroups).AddDefaultWeapon();
             var creature1 = new Creature("Goblin", 6, 6, 1, 1, 1, 2).AddOHAttack().SetCurrentGroup(numberOfGroups).AddDefaultWeapon();
             var creature2Ranged = new Creature("OrcRanged", 3, 10, 1, 1, 1, 2).AddOHAttack(0, 1, true).SetCurrentGroup(numberOfGroups).AddDefaultWeapon();
@@ -74,7 +74,7 @@ namespace CreatureSimulator
 
             var team1 = new List<Creature> { creature1, creature1Ranged };
             var team2 = new List<Creature> { creature2, creature2Ranged };
-
+            */
             int stopper = 0;
             while (team1.Count > 0 && team2.Count > 0 && ++stopper < 100)
             {

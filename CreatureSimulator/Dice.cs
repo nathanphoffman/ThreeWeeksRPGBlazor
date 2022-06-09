@@ -10,9 +10,15 @@ namespace CreatureSimulator
     {
         public enum enWeaponTypes { NW, OH, TH  }
         private static Random rnd = new Random();
+
+        public static int Random(int number)
+        {
+            return rnd.Next(number) + 1;
+        }
+
         public static int RollD6()
         {
-            return rnd.Next(6) + 1;
+            return Random(6);
         }
 
         public static int Roll2D6()
@@ -43,10 +49,6 @@ namespace CreatureSimulator
             else return items[rnd.Next(items.Count)];
         }
 
-        public static int Random(int number)
-        {
-            return rnd.Next(number) + 1;
-        }
 
 
     }

@@ -1,9 +1,111 @@
 ﻿@page "/"
+@using CreatureSimulator
+@inject IJSRuntime JS
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Creature Combat Simulator</PageTitle>
 
-<h1>Hello, world!</h1>
+<h3>Creature Combat Simulator</h3>
+Paste in a list of TWRPG compatible creatures seperated by new lines.  If you include "Name: " it will use the name specified otherwise it will use a default name generated for the creature.
+<br/>
+<textarea @bind="creatureTWRPG"></textarea>
 
-Welcome to your new app.
+<div>
+<button class="btn btn-primary" @onclick="AddTeam1">Add To Team1</button>
+<button class="btn btn-primary" @onclick="AddTeam2">Add To Team2</button>
+</div>
+<div>
+    <div style="float:left;width:40%">
+        <h3>
+            Team 1
+        </h3>
+    
+        <p>
+                @foreach (var item in team1)
+                {
+                    <br/>
+                    @item.creatureStats
+                }
+    
+        </p>
+    </div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    <div style="float:left;width: 40%">
+        <h3>
+            Team 2
+        </h3>
+    
+        <p>
+            @foreach (var item in team2)
+            {
+                <br/>
+                @item.creatureStats
+            }
+        </p>
+    </div>
+</div>
+
+<div>
+<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="SimulateCombat">Simulate One Combat</button>
+<!--<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="AddTeam2">Estimate Win / Loss Ratio</button>-->
+</div>
+
+    <p>
+            @foreach (var item in logging)
+            {
+                <br/>
+                @item
+            }
+    
+    </p>
+
+@code {
+    private int currentCount = 0;
+    private CreatureStats selectedCreature = null;
+
+    private List<CreatureStats> team1 = new List<CreatureStats>();
+    private List<CreatureStats> team2 = new List<CreatureStats>();
+
+    private bool HideLabel = false;
+    private string _creatureTWRPG = "";
+
+    private List<string> logging = new List<string>();
+
+    private string creatureTWRPG
+    {
+        get { return _creatureTWRPG; }
+        set
+        {
+            _creatureTWRPG = value;
+            HideLabel = true;
+            //AddCreature();
+
+        }
+    }
+
+    private void AddTeam1()
+    {
+        if (selectedCreature == null) return;
+        //selectedCreature.name = creatureName;
+        team1.Add(selectedCreature);
+        selectedCreature = null;
+        _creatureTWRPG = "";
+    }
+
+    private void AddTeam2()
+    {
+        if (selectedCreature == null) return;
+        //selectedCreature.name = creatureName;
+        team2.Add(selectedCreature);
+        selectedCreature = null;
+        _creatureTWRPG = "";
+    }
+
+
+    private void SimulateCombat()
+    {
+        var team1Creatures = team1.Select(x => new Creature(x)).ToList();
+        var team2Creatures = team2.Select(x => new Creature(x)).ToList();
+        (int result, var logs) = Simulator.Run(3, team1Creatures, team2Creatures);
+        this.logging = logs;
+    }
+}
