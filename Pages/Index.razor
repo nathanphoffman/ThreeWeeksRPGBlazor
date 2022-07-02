@@ -28,7 +28,7 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
                 @foreach (var item in team1)
                 {
                     <br/>
-                    @item.name<span>:</span> @item.creatureStats
+                    @item.name<span>:</span> @item.creatureStats <button @onclick="()=>Remove(1,team1.IndexOf(item))">x</button>
                 }
     
         </p>
@@ -43,15 +43,16 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
             @foreach (var item in team2)
             {
                 <br/>
-                @item.name<span>:</span> @item.creatureStats
+                @item.name<span>:</span> @item.creatureStats <button @onclick="()=>Remove(2,team2.IndexOf(item))">x</button>
             }
         </p>
     </div>
 </div>
 
-<div>
-<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="SimulateCombat">Simulate One Combat</button>
-<button hidden="@(!HideLabel)"class="btn btn-primary" @onclick="EstimateRatio">Estimate Win / Loss Ratio</button>
+<div hidden="@(HideLabel)">
+<button class="btn btn-primary" @onclick="SimulateCombat">Simulate One Combat</button>
+<button class="btn btn-primary" @onclick="EstimateRatio">Estimate Win / Loss Ratio</button>
+<button class="btn btn-grey" @onclick="Reset">Reset</button>
 </div>
 
 <div>
@@ -73,7 +74,7 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
     private List<CreatureStats> team1 = new List<CreatureStats>();
     private List<CreatureStats> team2 = new List<CreatureStats>();
 
-    private bool HideLabel = false;
+    private bool HideLabel = true;
     private string _creatureTWRPG = "";
 
     private List<string> logging = new List<string>();
@@ -84,7 +85,6 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
         set
         {
             _creatureTWRPG = value;
-            HideLabel = true;
         }
     }
 
@@ -108,6 +108,7 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
             team.Add(creature);
         }
 
+        CheckHiddenButtons();
         _creatureTWRPG = "";
     }
 
@@ -124,6 +125,27 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
         var team1Creatures = team1.Select(x => new Creature(x,numOfGroups)).ToList();
         var team2Creatures = team2.Select(x => new Creature(x,numOfGroups)).ToList();
         this.logging  = Simulator.RunStatistics(iterations, numOfGroups, team1Creatures, team2Creatures);
+    }
+
+    private void Reset()
+    {
+        _creatureTWRPG = "";
+        team1 = new List<CreatureStats>();
+        team2 = new List<CreatureStats>();
+        CheckHiddenButtons();
+    }
+
+    private void Remove(int team, int i)
+    {
+        if(team == 1) team1 = team1.Where((x, idx) => idx != i).ToList();
+        else if(team == 2) team2 = team2.Where((x, idx) => idx != i).ToList();
+        CheckHiddenButtons();
+    }
+
+    private void CheckHiddenButtons()
+    {
+        HideLabel = !(team1.Count > 0 && team2.Count > 0);
+        this.logging = new List<string>();
     }
 
 }

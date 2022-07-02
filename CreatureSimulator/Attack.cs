@@ -15,10 +15,10 @@
             if (success)
             {
                 target.Hitpoints -= result;
-                return $"{attacker.Name} ({attacker.Hitpoints}) dealt {weaponType.ToString()} {result} damage to {target.Name} ({target.Hitpoints})";
+                return $"{attacker.Name} ({attacker.Hitpoints}) dealt {weaponType.ToString()} {result} {(ranged ? "ranged" : "")} damage to {target.Name} ({target.Hitpoints+result} => {target.Hitpoints})";
             }
 
-            return $"{attacker.Name} ({attacker.Hitpoints}) swung {weaponType.ToString()} and missed against {target.Name} ({target.Hitpoints})";
+            return $"{attacker.Name} ({attacker.Hitpoints}) attacked {(ranged ? "ranged" : "")} {weaponType.ToString()} and missed against {target.Name} ({target.Hitpoints})";
         }
 
     }

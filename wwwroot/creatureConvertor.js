@@ -25,7 +25,6 @@
         return [...prefixed, ...postfixed];
     }
 
-
     function getValue(keywords, source) {
 
         let postfixKeywords = [...newKeywords(keywords, ' '), ...newKeywords(keywords, ':'), ...newKeywords(keywords, '\n')];
@@ -47,10 +46,10 @@
         const statKeywords = ['stat', 'stats', 'statistics', 'statistic'];
         const heartKeywords = ['heart', 'hearts'];
 
-        const thKeywords = ['th'];
-        const ohKeywords = ['oh'];
+        const thKeywords = ['th','rth'];
+        const ohKeywords = ['oh','roh'];
         const nwKeywords = ['nw'];
-        const rangedKeywords = ['rnw','roh','rth'];
+        const rangedKeywords = ['roh','rth'];
 
         const convertModifier = (mod) => {
             let fmod = Math.ceil((Number(mod) - 10) / 2);
@@ -155,7 +154,6 @@
             result.creatureStats = `STATS:+${stats} / ${vari} Hearts: ${result.hearts}. ${result.type}${result.ranged ? 'R' : ''}${result.damage}. Armor: ${result.armor}.`;
 
             return result;
-
         }
     }
 

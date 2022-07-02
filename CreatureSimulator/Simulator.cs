@@ -61,25 +61,30 @@ namespace CreatureSimulator
 
         public static (int result,List<string> logs) Run(int numberOfGroups, List<Creature> team1, List<Creature> team2)
         {
-            List<string> logging = new List<string>();
+            List<string> logging = new List<string>() { "Initial Positions" };
 
             // deep cloning lists and resetting creatures (hp + random group position) is necessary so references do not carry to future iterations
             List<Creature> team1Clone = team1.Select(x => x.ResetCreature(numberOfGroups)).ToList();
             List<Creature> team2Clone = team2.Select(x => x.ResetCreature(numberOfGroups)).ToList();
 
-            int stopper = 0;
-            while (team1Clone.Count > 0 && team2Clone.Count > 0 && ++stopper < 100)
+            LogGroupPositions(numberOfGroups, logging, team1Clone, team2Clone);
+
+            int rounds = 0;
+            while (team1Clone.Count > 0 && team2Clone.Count > 0 && ++rounds < 100)
             {
+                logging.Add($"Round: {rounds} of combat.");
+
                 team1Clone.ForEach(creature =>
                 {
-                    LogGroupPositions(numberOfGroups, logging, team1Clone, team2Clone);
+
                     if(creature != null) logging.Add(ProcessTurn(creature, team2Clone, numberOfGroups));
+                    LogGroupPositions(numberOfGroups, logging, team1Clone, team2Clone);
                     RemoveDeadCreatures(logging, team2Clone);
                 });
-                team2.ForEach(creature =>
+                team2Clone.ForEach(creature =>
                 {
-                    LogGroupPositions(numberOfGroups, logging, team1Clone, team2Clone);
                     if (creature != null) logging.Add(ProcessTurn(creature, team1Clone, numberOfGroups));
+                    LogGroupPositions(numberOfGroups, logging, team1Clone, team2Clone);
                     RemoveDeadCreatures(logging, team1Clone);
                 });
             }
@@ -133,6 +138,7 @@ namespace CreatureSimulator
                 var attack = creature.GetAttackByType(Dice.enWeaponTypes.OH, true);
                 if (attack != null && otherSpaces.Count > 0 && atSpace.Count == 0)
                 {
+                    creature.CurrentGroup = otherChoice.CurrentGroup;
                     return attack.MakeAttack(creature, otherChoice);
                 }
                 else if (attack != null && noSpaces.Count > 0)
@@ -162,6 +168,7 @@ namespace CreatureSimulator
                     creature.CurrentGroup = otherChoice.CurrentGroup;
                     return attack.MakeAttack(creature, otherChoice);
                 }
+                // !! there should be a default natural weapon here
             }
 
             return null;
