@@ -52,20 +52,20 @@
         const nwKeywords = ['nw'];
         const rangedKeywords = ['nwr','ohr','thr'];
 
-        function convertModifier(mod) {
+        const convertModifier = (mod) => {
             let fmod = Math.ceil((Number(mod) - 10) / 2);
             fmod = Math.ceil(fmod / 3);
             return fmod < 0 ? 0 : fmod;
         }
 
-        function averageMod(creature) {
+        const averageMod = (creature) => {
             let match = null;
             let arr = [creature.strength, creature.intelligence, creature.dexterity, creature.charisma];
             arr.sort().reduce((prev, curr) => curr === prev ? match = curr : curr);
             return match !== null ? match : arr[0];
         }
 
-        function getVariance(avg, creature) {
+        const getVariance = (avg, creature) => {
             let variance = '';
             if (creature.strength != avg) variance += `STR:+${creature.strength} `;
             if (creature.charisma != avg) variance += `CHA:+${creature.charisma} `;
@@ -75,20 +75,22 @@
             return variance;
         }
 
-        function convertDamage(creature, prevDamage) {
-
+        const convertDamage = (creature, prevDamage) => {
             const damageConverted = Math.ceil(prevDamage / 2);
-            if (creature.dexterity > creature.strength) return `OH${damageConverted - 5}`;
-            else return damageConverted > 5 ? `TH+${damageConverted - 5}` : `NW${damageConverted - 3}`;
-
+            // 5 is the approximate damage of a one-handed weapon and 3 is that of a natural weapon.  This is subtracted from the damage to undo the dice roll buff
+            // Two-Handed is normally 7 but we use 5 because a TH weapon comes with downsides and is approximately balanced to a One Handed Weapon
+            const plus5 = damageConverted >= 5 ? '+' : '';
+            const plus3 = damageConverted >= 3 ? '+' : '';
+            if (creature.dexterity > creature.strength) return `OH${plus5}${damageConverted - 5}`;
+            else return damageConverted > 5 ? `TH+${damageConverted - 5}` : `NW${plus3}${damageConverted - 3}`;
         }
 
-        function convertHP(old) {
+        const convertHP = (old) => {
             if (old < 10) return 1;
             else return Math.ceil(old / 20) + 1;
         }
 
-        function convertArmorClass(old) {
+        const convertArmorClass = (old) => {
             let ac = Math.ceil(old / 3) + 3;
             return ac > 10 ? 10 : ac;
         }
@@ -96,7 +98,7 @@
         if (is5e) {
 
             let creature = {
-                strength: convertModifier() || 0,
+                strength: convertModifier(getValue(strKeywords, val)) || 0,
                 intelligence: convertModifier(getValue(intKeywords, val)) || 0,
                 dexterity: convertModifier(getValue(dexKeywords, val)) || 0,
                 charisma: convertModifier(getValue(chaKeywords, val)) || 0

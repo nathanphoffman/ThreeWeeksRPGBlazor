@@ -1552,11 +1552,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\talos\\source\\repos\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor.csproj",
+      "projectUniqueName": "C:\\Users\\talos\\Desktop\\Code\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor.csproj",
       "projectName": "ThreeWeeksRPGBlazor",
-      "projectPath": "C:\\Users\\talos\\source\\repos\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor.csproj",
+      "projectPath": "C:\\Users\\talos\\Desktop\\Code\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor.csproj",
       "packagesPath": "C:\\Users\\talos\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\talos\\source\\repos\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor\\obj\\",
+      "outputPath": "C:\\Users\\talos\\Desktop\\Code\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

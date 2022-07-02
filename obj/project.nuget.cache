@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "A+hBuH95fLYG+7NExybDb4rBtIOtlR1jltEwwv0pJV8Ju7GG0nSAbCrP4OJFaIKwv0dVmEQaMSSPeIxKL8Fb6w==",
+  "dgSpecHash": "P2APoGTcBH3m6SJCNy8CBt7ycMvuNXv1CH+ikvIQKXo9NksYnDEjmVUDTl5TAA1jOMbLH1dKJmv/uJScajOOnw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\talos\\source\\repos\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor.csproj",
+  "projectFilePath": "C:\\Users\\talos\\Desktop\\Code\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor\\ThreeWeeksRPGBlazor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\talos\\.nuget\\packages\\microsoft.aspnetcore.authorization\\6.0.4\\microsoft.aspnetcore.authorization.6.0.4.nupkg.sha512",
     "C:\\Users\\talos\\.nuget\\packages\\microsoft.aspnetcore.components\\6.0.4\\microsoft.aspnetcore.components.6.0.4.nupkg.sha512",
