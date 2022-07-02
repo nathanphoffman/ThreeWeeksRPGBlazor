@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CreatureSimulator
 {
-    internal static class Dice
+    public static class Dice
     {
         public enum enWeaponTypes { NW, OH, TH  }
         private static Random rnd = new Random();

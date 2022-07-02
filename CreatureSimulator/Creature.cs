@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CreatureSimulator
 {
-    internal class Creature
+    public class Creature
     {
-        public Creature(string name, int hearts, int armor, int intelligence, int strength, int charisma, int dexterity)
+        public Creature(string name, int hearts, int armor, int intelligence, int strength, int charisma, int dexterity, int numOfGroups = 4)
         {
             this.Hearts = hearts;
             this.Armor = armor;
@@ -19,6 +19,7 @@ namespace CreatureSimulator
             this.Attacks = new List<Attack>();
             this.Name = name;
             SetHitpoints();
+            SetHitpoints().AddDefaultWeapon().SetCurrentGroup(numOfGroups);
         }
 
         public Creature(CreatureStats creature, int numOfGroups)
@@ -32,17 +33,9 @@ namespace CreatureSimulator
             this.Strength = creature.strength;
             this.Armor = creature.armor;
             this.Attacks.Add(new Attack { damage = creature.damage, weaponType = weaponType, ranged = creature.ranged });
-            this.Name = String.IsNullOrEmpty(creature.name) ? $"Creature #{Dice.Random(1000) + 1}" : creature.name;
+            this.Name = String.IsNullOrEmpty(creature.name) ? $"Creature #{Dice.Random(100000) + 1}" : creature.name;
             SetHitpoints().AddDefaultWeapon().SetCurrentGroup(numOfGroups);
         }
-        /*
-        public Creature(string stats)
-        {
-
-
-            SetHitpoints();
-        }
-        */
 
         public int CurrentGroup;
         public int Hearts;
@@ -83,6 +76,13 @@ namespace CreatureSimulator
         {
             var attackResults = Attacks.Where(x => x.weaponType == Dice.enWeaponTypes.NW).ToList();
             if (attackResults.Count == 0 && Attacks != null) Attacks.Add(new Attack { weaponType = Dice.enWeaponTypes.NW});
+            return this;
+        }
+        
+        public Creature ResetCreature(int numOfGroups)
+        {
+            SetCurrentGroup(numOfGroups);
+            SetHitpoints();
             return this;
         }
 

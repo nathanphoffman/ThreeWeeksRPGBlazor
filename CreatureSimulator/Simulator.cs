@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CreatureSimulator
 {
-    internal static class Simulator
+    public static class Simulator
     {
 
         public static void LogGroupPosition(int group, List<string> logging, params List<Creature>[] teams)
         {
-            var creaturesInGroup = teams.ToList().SelectMany(y => y.Where(a => a.CurrentGroup == group).Select(z => z.Name)).ToList();
+            var creaturesInGroup = teams.ToList().SelectMany(y => y.Where(a => a.CurrentGroup == group).Select(z => $"{z.Name} (HP: {z.Hitpoints})")).ToList();
             if (creaturesInGroup.Count > 0) logging.Add($"Group {group}: " + String.Join(',', creaturesInGroup));
             else logging.Add($"Group {group}: none");
         }
@@ -33,7 +33,7 @@ namespace CreatureSimulator
             int i = 0;
             while (i++ < iterations)
             {
-                (int result, List<string> logs) = Run(roomSize == 0 ? Dice.Choose(new List<int> {1,2,3,4 }) : roomSize, team1, team2);
+                (int result, List<string> logs) = Run(roomSize == 0 ? Dice.Random(4) /* default: 4 size */ : roomSize, team1, team2);
                 results[result] += 1;
                 if (i % 1000 == 0)
                 {
@@ -46,7 +46,7 @@ namespace CreatureSimulator
 
                     logging.Add($"Team1 wins: {results[1]} vs Team2 wins: {results[2]}  {thisNumber}");
 
-                    if (consensuses > 10)
+                    if (consensuses > 2)
                     {
                         logging.Add($"CONSENSUS FOUND! Team1 wins {Math.Round(thisNumber*100,1)}% of the time. {results[1]} vs {results[2]}");
                         break;
@@ -63,41 +63,30 @@ namespace CreatureSimulator
         {
             List<string> logging = new List<string>();
 
-            // !! we need to work here next and move teams to a parameter and combine
-            /*
-            var creature1Ranged = new Creature("GoblinRanged", 6, 6, 1, 1, 1, 2).AddOHAttack(0, 1, false).SetCurrentGroup(numberOfGroups).AddDefaultWeapon();
-            var creature1 = new Creature("Goblin", 6, 6, 1, 1, 1, 2).AddOHAttack().SetCurrentGroup(numberOfGroups).AddDefaultWeapon();
-            var creature2Ranged = new Creature("OrcRanged", 3, 10, 1, 1, 1, 2).AddOHAttack(0, 1, true).SetCurrentGroup(numberOfGroups).AddDefaultWeapon();
-            var creature2 = new Creature("Orc", 3, 10, 1, 1, 1, 2).AddOHAttack().SetCurrentGroup(numberOfGroups).AddDefaultWeapon();
+            // deep cloning lists and resetting creatures (hp + random group position) is necessary so references do not carry to future iterations
+            List<Creature> team1Clone = team1.Select(x => x.ResetCreature(numberOfGroups)).ToList();
+            List<Creature> team2Clone = team2.Select(x => x.ResetCreature(numberOfGroups)).ToList();
 
-            creature1.LogCreatureStats(logging);
-            creature1Ranged.LogCreatureStats(logging);
-            creature2.LogCreatureStats(logging);
-            creature2Ranged.LogCreatureStats(logging);
-
-            var team1 = new List<Creature> { creature1, creature1Ranged };
-            var team2 = new List<Creature> { creature2, creature2Ranged };
-            */
             int stopper = 0;
-            while (team1.Count > 0 && team2.Count > 0 && ++stopper < 100)
+            while (team1Clone.Count > 0 && team2Clone.Count > 0 && ++stopper < 100)
             {
-                team1.ForEach(creature =>
+                team1Clone.ForEach(creature =>
                 {
-                    LogGroupPositions(numberOfGroups, logging, team1, team2);
-                    if(creature != null) logging.Add(ProcessTurn(creature, team2, numberOfGroups));
-                    RemoveDeadCreatures(logging, team2);
+                    LogGroupPositions(numberOfGroups, logging, team1Clone, team2Clone);
+                    if(creature != null) logging.Add(ProcessTurn(creature, team2Clone, numberOfGroups));
+                    RemoveDeadCreatures(logging, team2Clone);
                 });
                 team2.ForEach(creature =>
                 {
-                    LogGroupPositions(numberOfGroups, logging, team1, team2);
-                    if (creature != null) logging.Add(ProcessTurn(creature, team1, numberOfGroups));
-                    RemoveDeadCreatures(logging, team1);
+                    LogGroupPositions(numberOfGroups, logging, team1Clone, team2Clone);
+                    if (creature != null) logging.Add(ProcessTurn(creature, team1Clone, numberOfGroups));
+                    RemoveDeadCreatures(logging, team1Clone);
                 });
             }
 
             logging.Add("Battle has ended");
-            if (team1.Count > 0) return (1,logging);
-            if (team2.Count > 0) return (2,logging);
+            if (team1Clone.Count > 0) return (1,logging);
+            if (team2Clone.Count > 0) return (2,logging);
             else return (0,logging);
 
         }

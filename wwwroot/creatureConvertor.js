@@ -50,7 +50,7 @@
         const thKeywords = ['th'];
         const ohKeywords = ['oh'];
         const nwKeywords = ['nw'];
-        const rangedKeywords = ['nwr','ohr','thr'];
+        const rangedKeywords = ['rnw','roh','rth'];
 
         const convertModifier = (mod) => {
             let fmod = Math.ceil((Number(mod) - 10) / 2);

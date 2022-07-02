@@ -1,6 +1,6 @@
 ﻿namespace CreatureSimulator
 {
-    internal class Attack
+    public class Attack
     {
         public int damage = 0;
         public int numAttacks = 1;
