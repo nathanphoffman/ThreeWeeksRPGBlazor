@@ -26,12 +26,14 @@
     }
 
     function getValue(keywords, source) {
-
         let postfixKeywords = [...newKeywords(keywords, ' '), ...newKeywords(keywords, ':'), ...newKeywords(keywords, '\n')];
 
         let results = postfixKeywords.map(keyword => extract(keyword, source));
         return results.find(value => !isNaN(value) && value != '');
+    }
 
+    function hasValue(keyword, source) {
+        return source.toUpperCase().includes(keyword.toUpperCase());
     }
 
     function convert(val, is5e) {
@@ -42,6 +44,7 @@
         const dmgKeywords = ['hit', 'damage', 'dmg'];
         const hitpoints = ['hitpoints', 'hit points', 'hp'];
         const armorKeywords = ['AC', 'Armor Class', "ArmorClass", "Armor"];
+        const rangedConversionKeywords = ['Ranged Weapon'];
 
         const statKeywords = ['stat', 'stats', 'statistics', 'statistic'];
         const heartKeywords = ['heart', 'hearts'];
@@ -111,9 +114,10 @@
             let newHP = convertHP(hp) || 1;
             let fiveArmor = getValue(armorKeywords, val);
             let newFiveArmor = convertArmorClass(fiveArmor) || 8;
+            let isRanged = hasValue("Ranged Weapon", val);
 
             return {
-                creatureStats: `STATS:+${avg} / ${vari} Hearts: ${newHP}. Damage: ${damageString}. Armor: ${newFiveArmor}.`,
+                creatureStats: `STATS:+${avg} / ${vari} Hearts: ${newHP}. Damage: ${isRanged ? 'R' : ''}${damageString}. Armor: ${newFiveArmor}.`,
                 strength: creature.strength,
                 intelligence: creature.intelligence,
                 dexterity: creature.dexterity,
@@ -121,7 +125,8 @@
                 hearts: newHP,
                 armor: newFiveArmor,
                 type: damageString.slice(0, 2) || "NW",
-                damage: Number(damageString.slice(2, damageString.length) || 0)
+                damage: Number(damageString.slice(2, damageString.length) || 0),
+                ranged: isRanged // Ranged Weapon Attack
             };
         }
         else {
