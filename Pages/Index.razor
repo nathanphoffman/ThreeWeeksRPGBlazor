@@ -4,65 +4,84 @@
 
 <PageTitle>Creature Combat Simulator</PageTitle>
 
-<h3>Creature Combat Simulator</h3>
-Paste in a list of TWRPG compatible creatures seperated by new lines.  If you include "Name: " it will use the name specified otherwise it will use a default name generated for the creature.
-<div>
-<h3>Examples</h3>
-STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
+<h2>Creature Combat Simulator</h2>
+<div class="alert alert-primary" role="alert">
+  Team 1 always goes first, as a result they have a slight advantage in combat simulation
 </div>
-<br/>
-<textarea @bind="creatureTWRPG"></textarea>
+<div class="alert alert-secondary" role="alert">
+    If your string is empty or misses details, the defaults will be used: STATS:+0 / Hearts: 1. NW0. Armor: 8.
+</div>
+<p>
+Paste in a list of TWRPG compatible creatures seperated by new lines, once creatures are added to both teams simulation options will appear. Some examples include:
+</p>
+<div>
+    <ul>
+        <li>STATS:+2 / DEX:+1 Hearts: 2. Damage: TH+1. Armor: 9.</li>
+        <li>STATS:0 / STR:+1, INT+2 Hearts: 1. Damage: NW+5. Armor: 7.</li>
+    </ul>
+</div>
 
-<div>
-<button class="btn btn-primary" @onclick="AddTeam1">Add To Team1</button>
-<button class="btn btn-primary" @onclick="AddTeam2">Add To Team2</button>
-</div>
-<br/>
-<div style="display:inline-block;width:100%">
-    <div style="float:left;width:40%">
-        <h3>
-            Team 1
-        </h3>
-    
-        <p>
+<section>
+    <textarea @bind="creatureTWRPG" rows="5" cols="40"></textarea>
+
+    <div>
+        <button class="btn btn-primary" @onclick="AddTeam1">Add To Team1</button>
+        <button class="btn btn-primary" @onclick="AddTeam2">Add To Team2</button>
+    </div>
+</section>
+
+<section style="margin:10px;">
+    <div class="row">
+        <div class="col-md">
+            <h3>
+                Team 1
+            </h3>
+
+            <ul>
                 @foreach (var item in team1)
                 {
-                    <br/>
-                    @item.name<span>:</span> @item.creatureStats <button @onclick="()=>Remove(1,team1.IndexOf(item))">x</button>
-                }
-    
-        </p>
-    </div>
 
-    <div style="float:left;width: 40%">
-        <h3>
-            Team 2
-        </h3>
-    
-        <p>
-            @foreach (var item in team2)
-            {
-                <br/>
-                @item.name<span>:</span> @item.creatureStats <button @onclick="()=>Remove(2,team2.IndexOf(item))">x</button>
-            }
-        </p>
+                    <li>
+                        @item.name
+                        <span>:</span> @item.creatureStats <button @onclick="()=>Remove(1,team1.IndexOf(item))">x</button>
+                    </li>
+
+                }
+            </ul>
+        </div>
+
+        <div class="col-sm">
+            <h3>
+                Team 2
+            </h3>
+
+            <ul>
+                @foreach (var item in team2)
+                {
+                    <li>
+                        @item.name
+                        <span>:</span> @item.creatureStats <button @onclick="()=>Remove(2,team2.IndexOf(item))">x</button>
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
-</div>
+</section>
 
 <div hidden="@(HideLabel)">
-<button class="btn btn-primary" @onclick="SimulateCombat">Simulate One Combat</button>
-<button class="btn btn-primary" @onclick="EstimateRatio">Estimate Win / Loss Ratio</button>
-<button class="btn btn-grey" @onclick="Reset">Reset</button>
+    <button class="btn btn-primary" @onclick="SimulateCombat">Simulate Combat</button>
+    <button class="btn btn-primary" @onclick="EstimateRatio">Win/Loss Ratio</button>
+    <button class="btn btn-grey" @onclick="Reset">Reset</button>
 </div>
 
 <div>
     <p>
-            @foreach (var item in logging)
-            {
-                <br/>
-                @item
-            }
-    
+        @foreach (var item in logging)
+        {
+            <br />
+            @item
+        }
+
     </p>
 </div>
 @code {
@@ -81,7 +100,10 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
 
     private string creatureTWRPG
     {
-        get { return _creatureTWRPG; }
+        get
+        {
+            return _creatureTWRPG;
+        }
         set
         {
             _creatureTWRPG = value;
@@ -101,7 +123,7 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
     private async Task AddToTeam(List<CreatureStats> team)
     {
         var creatureSplit = creatureTWRPG.Split('\n');
-        foreach(var creatureText in creatureSplit)
+        foreach (var creatureText in creatureSplit)
         {
             CreatureStats creature = await JS.InvokeAsync<CreatureStats>("convertCreature", creatureTWRPG, false);
             creature.name = $"Creature#{Dice.Random(1000) + 1}";
@@ -114,17 +136,17 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
 
     private void SimulateCombat()
     {
-        var team1Creatures = team1.Select(x => new Creature(x,numOfGroups)).ToList();
-        var team2Creatures = team2.Select(x => new Creature(x,numOfGroups)).ToList();
+        var team1Creatures = team1.Select(x => new Creature(x, numOfGroups)).ToList();
+        var team2Creatures = team2.Select(x => new Creature(x, numOfGroups)).ToList();
         (int result, var logs) = Simulator.Run(numOfGroups, team1Creatures, team2Creatures);
         this.logging = logs;
     }
 
     private void EstimateRatio()
     {
-        var team1Creatures = team1.Select(x => new Creature(x,numOfGroups)).ToList();
-        var team2Creatures = team2.Select(x => new Creature(x,numOfGroups)).ToList();
-        this.logging  = Simulator.RunStatistics(iterations, numOfGroups, team1Creatures, team2Creatures);
+        var team1Creatures = team1.Select(x => new Creature(x, numOfGroups)).ToList();
+        var team2Creatures = team2.Select(x => new Creature(x, numOfGroups)).ToList();
+        this.logging = Simulator.RunStatistics(iterations, numOfGroups, team1Creatures, team2Creatures);
     }
 
     private void Reset()
@@ -137,8 +159,8 @@ STATS:+0 / DEX:+1 Hearts: 1. Damage: OH-2. Armor: 8.
 
     private void Remove(int team, int i)
     {
-        if(team == 1) team1 = team1.Where((x, idx) => idx != i).ToList();
-        else if(team == 2) team2 = team2.Where((x, idx) => idx != i).ToList();
+        if (team == 1) team1 = team1.Where((x, idx) => idx != i).ToList();
+        else if (team == 2) team2 = team2.Where((x, idx) => idx != i).ToList();
         CheckHiddenButtons();
     }
 
