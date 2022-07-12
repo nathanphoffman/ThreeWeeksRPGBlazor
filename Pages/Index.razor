@@ -14,12 +14,12 @@
 <p>
 Paste in a list of TWRPG compatible creatures separated by new lines, once creatures are added to both teams simulation options will appear.  Examples:
 </p>
-<div>
+<section>
     <ul>
         <li>STATS:+2 / DEX:+1 Hearts: 2. Damage: TH+1. Armor: 9.</li>
         <li>STATS:0 / STR:+1, INT+2 Hearts: 1. Damage: NW+5. Armor: 7.</li>
     </ul>
-</div>
+</section>
 
 <section>
     <textarea @bind="creatureTWRPG" rows="5" cols="40"></textarea>
@@ -66,15 +66,16 @@ Paste in a list of TWRPG compatible creatures separated by new lines, once creat
             </ul>
         </div>
     </div>
+
+    <div hidden="@(HideLabel)">
+        <button class="btn btn-primary" @onclick="SimulateCombat">Simulate Combat</button>
+        <button class="btn btn-primary" @onclick="EstimateRatio">Win/Loss Ratio</button>
+        <button class="btn btn-grey" @onclick="Reset">Reset</button>
+    </div>
+
 </section>
 
-<div hidden="@(HideLabel)">
-    <button class="btn btn-primary" @onclick="SimulateCombat">Simulate Combat</button>
-    <button class="btn btn-primary" @onclick="EstimateRatio">Win/Loss Ratio</button>
-    <button class="btn btn-grey" @onclick="Reset">Reset</button>
-</div>
-
-<div>
+<section>
     <p>
         @foreach (var item in logging)
         {
@@ -83,7 +84,7 @@ Paste in a list of TWRPG compatible creatures separated by new lines, once creat
         }
 
     </p>
-</div>
+</section>
 @code {
     private int currentCount = 0;
     private CreatureStats selectedCreature = null;
