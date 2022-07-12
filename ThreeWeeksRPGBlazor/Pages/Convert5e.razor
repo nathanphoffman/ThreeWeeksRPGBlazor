@@ -1,0 +1,45 @@
+﻿@page "/convert5e"
+@using CreatureSimulator
+@inject IJSRuntime JS
+
+<PageTitle>Convert 5e Creatures to Three Weeks RPG</PageTitle>
+
+<h3>Convert 5e Creature to TWRPG</h3>
+<p>
+Paste in 5e creature stats using various notation, ex: "Intelligence: 14, STR: 10, AC 14" Converted result, stats not found will be set to default values.  Try copying the text from the table: <a target="_blank" href="https://www.dndbeyond.com/monsters/16907-goblin">D&D Beyond - Goblin</a>
+</p>
+
+<textarea @bind="creature5e" rows="5" cols="40"></textarea>
+<button style="margin-top:5px;display:block;" class="btn btn-primary" @onclick="ConvertCreature">Convert to TWRPG</button>
+
+<p>
+    @if (selectedCreature != null)
+    {
+        <strong>Conversion: </strong>
+        @selectedCreature.creatureStats
+    }
+</p>
+
+<h3>History</h3>
+<ul>
+    @foreach (var item in history)
+    {
+        <li>@item</li>
+    }
+</ul>
+
+@code {
+    private string creature5e = "";
+    private CreatureStats selectedCreature = null;
+    private List<string> history = new List<string>();
+
+    private async Task ConvertCreature()
+    {
+        CreatureStats creature = await JS.InvokeAsync<CreatureStats>("convertCreature", creature5e, true);
+
+        if(selectedCreature != null) history.Add($"{selectedCreature.creatureStats} ({DateTime.Now.ToString()})");
+        selectedCreature = creature;
+        StateHasChanged();
+    }
+
+}
